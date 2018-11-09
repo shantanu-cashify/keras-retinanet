@@ -495,9 +495,9 @@ def main(args=None):
 
     # plot graphs
 
-    print type(history)
-    print history
-    print history.history
+    print(type(history))
+    print(history)
+    print(history.history)
 
     # summarize history for accuracy
     # plt.plot(history.history['classification_acc'])
