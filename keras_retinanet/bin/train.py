@@ -25,6 +25,8 @@ import keras
 import keras.preprocessing.image
 import tensorflow as tf
 
+import matplotlib.pyplot as plt
+
 # Allow relative imports when being executed as script.
 if __name__ == "__main__" and __package__ is None:
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -127,7 +129,8 @@ def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0, freeze_
             'regression'    : losses.smooth_l1(),
             'classification': losses.focal()
         },
-        optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001)
+        optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001),
+        metrics=["accuracy"]
     )
 
     return model, training_model, prediction_model
@@ -480,13 +483,40 @@ def main(args=None):
     )
 
     # start training
-    training_model.fit_generator(
+    history = training_model.fit_generator(
         generator=train_generator,
         steps_per_epoch=args.steps,
         epochs=args.epochs,
         verbose=1,
         callbacks=callbacks,
     )
+
+    training_model.save(('id_proof/big_model.h5'))
+
+    # plot graphs
+
+    print type(history)
+    print history
+    print history.history
+
+    # summarize history for accuracy
+    # plt.plot(history.history['classification_acc'])
+    # #plt.plot(history['val_acc'])
+    # plt.title('model accuracy')
+    # plt.ylabel('accuracy')
+    # plt.xlabel('epoch')
+    # plt.legend(['train', 'test'], loc='upper left')
+    # plt.savefig('temp.png')
+    #
+    #
+    # # summarize history for loss
+    # plt.plot(history.history['loss'])
+    # #plt.plot(history['val_loss'])
+    # plt.title('model loss')
+    # plt.ylabel('loss')
+    # plt.xlabel('epoch')
+    # plt.legend(['train', 'test'], loc='upper left')
+    # plt.savefig('temp2.png')
 
 
 if __name__ == '__main__':
